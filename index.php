@@ -1,15 +1,19 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
 require_once 'vendor/autoload.php';
 
-$app = new \Slim\Slim();
+use \Slim\Slim;
+use \Hcode\Page;
+
+$app = new Slim();
 
 $app->config('debug', true);
 
 $app->get('/', function () {
-	$sql = new \Hcode\DB\Sql();
-	$results = $sql->select("select * from tb_users");
-	echo json_encode($results);
+	$page = new Page();
+	$page->setTpl("index");
 });
 
 $app->get('/teste/:nome', function ($nome) {
