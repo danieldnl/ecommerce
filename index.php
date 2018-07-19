@@ -48,7 +48,8 @@ $app->get('/admin/logout', function(){
 
 $app->get('/admin/users', function () {
     User::verifyLogin();
-    $users = User::listAll();
+    $users = User::listAll();$page = new Page();
+	$page->setTpl("index");
 	$page = new PageAdmin();
 	$page->setTpl("users", [
         "users" => $users
@@ -208,6 +209,16 @@ $app->post('/admin/categories/:idcategory', function($idcategory){
     $category->save();
     header("Location: /admin/categories");
     exit;
+});
+
+$app->get('/categories/:idcategory', function($idcategory){
+    $category = new Category();
+    $category->get((int)$idcategory);
+    $page = new Page();
+	$page->setTpl("category", [
+        'category' => $category->getValues(),
+        'products' => []
+    ]);
 });
 
 $app->run();

@@ -23,6 +23,8 @@ class Category extends Model
         ]);
 
         $this->setData($results[0]);
+
+        Category::updateFile();
     }
 
     public function get($idcategory)
@@ -34,27 +36,25 @@ class Category extends Model
         $this->setData($results[0]);
     }
 
-    public function update()
-    {
-        $sql = new Sql();
-        $results = $sql->select("CALL sp_usersupdate_save(:iduser, :desperson, :deslogin, :despassword, :desemail, :nrphone, :inadmin)", [
-            ":iduser" => $this->getiduser(),
-            ":desperson" => $this->getdesperson(), 
-            ":deslogin" => $this->getdeslogin(), 
-            ":despassword" => $this->getdespassword(), 
-            ":desemail" => $this->getdesemail(), 
-            ":nrphone" => $this->getnrphone(), 
-            ":inadmin" => $this->getinadmin() 
-        ]);
-
-        $this->setData($results[0]);
-    }
-
     public function delete()
     {
         $sql = new Sql();
         $sql = $sql->query("DELETE FROM tb_categories where idcategory = :idcategory", [
             ":idcategory" => $this->getidcategory()
         ]);
+
+        Category::updateFile();
+    }
+
+    public static function updateFile()
+    {
+        $categories = Category::listAll();
+        $html = [];
+
+        foreach ($categories as $category) {
+            array_push($html, '<li><a href="/categories/'.$category["idcategory"].'">'.$category['descategory'].'</a></li>');
+        }
+
+        file_put_contents($_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . "views" . DIRECTORY_SEPARATOR . "categories-menu.html", implode("", $html));
     }
 }
